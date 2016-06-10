@@ -14,7 +14,8 @@ public class Start_movie : MonoBehaviour {
     private float[] gyroX;
     private float[] gyroY;
     private float[] gyroZ;
-    private long[] gyroT;
+    private long[] gyroTlong;
+    private float[] gyroT;
     private int t = 0;
 
     public Transform mainCamera;
@@ -40,7 +41,8 @@ public class Start_movie : MonoBehaviour {
         gyroX = new float[nb_captures];
         gyroY = new float[nb_captures];
         gyroZ = new float[nb_captures];
-        gyroT = new long[nb_captures];
+        gyroTlong = new long[nb_captures];
+        gyroT = new float[nb_captures];
 
 
         for (int i = 0; i < nb_captures; i++)
@@ -61,7 +63,8 @@ public class Start_movie : MonoBehaviour {
             //change
             byte[] tempByte2 = System.BitConverter.GetBytes(System.BitConverter.ToInt64(gyroTableau, (i * capture_size) + 3* sizeof(float)));
             System.Array.Reverse(tempByte2);
-            gyroT[i] = System.BitConverter.ToInt64(tempByte2, 0);
+            gyroTlong[i] = System.BitConverter.ToInt64(tempByte2, 0);
+            gyroT[i] = (gyroTlong[i] - gyroTlong[0])/1E9f;
         }
         //----------------------------- A B O V E---------------------------------//
         //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
@@ -69,22 +72,22 @@ public class Start_movie : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-        
+    void Update() {
+
         // Updating the rotation
-        if (Time.time > gyroT[t])
+        while (Time.time > gyroT[t] && t < gyroT.Length - 2)
         {
             t++;
         }
 
-        float coeff = Time.deltaTime * 180 / Mathf.PI;
-        rot = transform.rotation*Quaternion.Euler(new Vector3(gyroX[t] *coeff, gyroY[t] *coeff, gyroZ[t] *coeff));
+        float coeff = Time.deltaTime * 180f / Mathf.PI /(gyroT[t+1]-gyroT[t]);
+        rotX = coeff * ( (gyroT[t + 1] - Time.time) * gyroY[t] + (Time.time - gyroT[t]) * gyroY[t + 1] );
+        rotY = coeff * ((gyroT[t + 1] - Time.time) * gyroX[t] + (Time.time - gyroT[t]) * gyroX[t + 1]);
+        rotZ = coeff * ((gyroT[t + 1] - Time.time) * gyroZ[t] + (Time.time - gyroT[t]) * gyroZ[t + 1]);
+      
 
-        mainCamera.rotation= rot;
-        Debug.Log(t);
-        Debug.Log(gyroT[t]);
-        
-
+        rot = transform.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+        mainCamera.rotation = rot;        
     }
 
 }
