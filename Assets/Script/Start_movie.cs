@@ -25,9 +25,6 @@ public class Start_movie : MonoBehaviour {
         // Start the movie
         ((MovieTexture)GetComponent<Renderer>().material.mainTexture).Play();
 
-        // Set default variables
-        oldLookingVector =  transform.rotation.eulerAngles;
-
         //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
         //----------------------------- B E L O W---------------------------------//
 
@@ -88,7 +85,7 @@ public class Start_movie : MonoBehaviour {
         rotZ = coeff * ((gyroT[t + 1] - Time.time) * gyroZ[t] + (Time.time - gyroT[t]) * gyroZ[t + 1]);
       
 
-        rot = transform.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+        rot = mainCamera.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
         mainCamera.rotation = rot;        
     }
 
