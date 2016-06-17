@@ -30,7 +30,7 @@ public class Start_movie : MonoBehaviour {
 
         //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
         //----------------------------- B E L O W---------------------------------//
-        byte[] gyroTableau = File.ReadAllBytes(".\\Assets\\Movies\\gyro_data.rot");
+        byte[] gyroTableau = File.ReadAllBytes("./Assets/Movies/gyro_data.rot");
         int capture_size = ((3 * sizeof(float)) + sizeof(long));
         if (gyroTableau.Length % capture_size != 0)
         {
