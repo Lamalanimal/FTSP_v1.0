@@ -18,6 +18,8 @@ public class rotation_master : MonoBehaviour {
     public Transform leftEye;
     public Transform rightEye;
 
+    public Transform leftEyeBox;
+    public Transform rightEyeBox;
 
     // Use this for initialization
     void Start () {
@@ -25,6 +27,10 @@ public class rotation_master : MonoBehaviour {
         //----------------------------- B E L O W---------------------------------//
 
         string fullPath = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
+
+        //http://docs.unity3d.com/Manual/StreamingAssets.html
+        //string fullPath = "jar:file://" + Application.dataPath + "!/assets/gyro_data.rot";
+
         byte[] gyroTableau = File.ReadAllBytes(fullPath);
         int capture_size = ((3 * sizeof(float)) + sizeof(long));
         if (gyroTableau.Length % capture_size != 0)
@@ -78,8 +84,8 @@ public class rotation_master : MonoBehaviour {
         rotY = coeff * ((gyroT[t + 1] - Time.time) * gyroX[t] + (Time.time - gyroT[t]) * gyroX[t + 1]);
         rotZ = coeff * ((gyroT[t + 1] - Time.time) * gyroZ[t] + (Time.time - gyroT[t]) * gyroZ[t + 1]);
 
-        leftEye.rotation = leftEye.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
-        rightEye.rotation = rightEye.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+        leftEyeBox.rotation = leftEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+        rightEyeBox.rotation = rightEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
     }
 
     // Normally, update head pose now.
@@ -104,8 +110,8 @@ public class rotation_master : MonoBehaviour {
 
         if (leftEye != null || rightEye!=null)
         {
-            leftEye.rotation = leftEye.rotation * rot;
-            rightEye.rotation = rightEye.rotation * rot;
+            leftEye.rotation = rot;
+            rightEye.rotation = rot;
         }
 
         /*
