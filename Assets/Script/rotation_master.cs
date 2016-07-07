@@ -33,13 +33,21 @@ public class rotation_master : MonoBehaviour {
         string fullPath = "";
 
 #if UNITY_ANDROID
-                fullPath = "/storage/emulated/0/Android/data/gyro_data.rot";
+
+        //try {
+            fullPath = "/storage/emulated/0/Android/data/gyro_data.rot";
+        //    
+        // }
+        //catch (DirectoryNotFoundException e)
+        //{
+
+        //}
 
 #else
                 fullPath = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
 #endif
-        Handheld.PlayFullScreenMovie(fullPath);
         byte[] gyroTableau = File.ReadAllBytes(fullPath);
+
         int capture_size = ((3 * sizeof(float)) + sizeof(long));
         if (gyroTableau.Length % capture_size != 0)
         {
@@ -87,13 +95,26 @@ public class rotation_master : MonoBehaviour {
             t++;
         }
 
-        float coeff = Time.deltaTime * 180f / Mathf.PI / (gyroT[t + 1] - gyroT[t]);
-        rotX = coeff * ((gyroT[t + 1] - Time.time) * gyroY[t] + (Time.time - gyroT[t]) * gyroY[t + 1]);
-        rotY = coeff * ((gyroT[t + 1] - Time.time) * gyroX[t] + (Time.time - gyroT[t]) * gyroX[t + 1]);
-        rotZ = coeff * ((gyroT[t + 1] - Time.time) * gyroZ[t] + (Time.time - gyroT[t]) * gyroZ[t + 1]);
+        if (t < gyroT.Length-2)
+        {
+            float coeff = Time.deltaTime * 180f / Mathf.PI / (gyroT[t + 1] - gyroT[t]);
+            rotX = coeff * ((gyroT[t + 1] - Time.time) * gyroY[t] + (Time.time - gyroT[t]) * gyroY[t + 1]);
+            rotY = coeff * ((gyroT[t + 1] - Time.time) * gyroX[t] + (Time.time - gyroT[t]) * gyroX[t + 1]);
+            rotZ = coeff * ((gyroT[t + 1] - Time.time) * gyroZ[t] + (Time.time - gyroT[t]) * gyroZ[t + 1]);
 
-        leftEyeBox.rotation = leftEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
-        rightEyeBox.rotation = rightEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+            leftEyeBox.rotation = leftEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+            rightEyeBox.rotation = rightEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+        }
+        else
+        {
+            //Debug.Log("Stop the rotation!");
+            leftEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            rightEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+
+        }
+
+
+        
     }
 
     // Normally, update head pose now.

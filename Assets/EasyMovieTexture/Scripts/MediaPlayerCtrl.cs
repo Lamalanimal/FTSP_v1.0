@@ -12,6 +12,7 @@ using UnityEngine.UI;
 public class MediaPlayerCtrl : MonoBehaviour {
 	
 	public string m_strFileName;
+    public float volume;
 	public GameObject [] m_TargetMaterial = null; 
 	private Texture2D m_VideoTexture = null;
 	private Texture2D m_VideoTextureDummy = null;
@@ -648,7 +649,8 @@ public class MediaPlayerCtrl : MonoBehaviour {
 	
 	public void Play()
 	{
-		if(m_bStop == true)
+        SetVolume(volume);
+        if (m_bStop == true)
 		{
 			Call_Play(0);
 			m_bStop = false;
@@ -659,7 +661,7 @@ public class MediaPlayerCtrl : MonoBehaviour {
 			Call_RePlay();
 		}
 		else if( m_CurrentState == MEDIAPLAYER_STATE.READY || m_CurrentState == MEDIAPLAYER_STATE.STOPPED || m_CurrentState == MEDIAPLAYER_STATE.END)
-		{
+		{  
 			Call_Play(0);
 		}
 	}
