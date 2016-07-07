@@ -10,9 +10,9 @@ using UnityEngine.UI;
 
 
 public class MediaPlayerCtrl : MonoBehaviour {
-	
+
+	public bool mute;
 	public string m_strFileName;
-    public float volume;
 	public GameObject [] m_TargetMaterial = null; 
 	private Texture2D m_VideoTexture = null;
 	private Texture2D m_VideoTextureDummy = null;
@@ -104,9 +104,12 @@ public class MediaPlayerCtrl : MonoBehaviour {
 	
 	void Awake(){
 		
-
-
-
+		// Si Mute, on met le volume a 0
+		if( mute )
+		{
+			m_fVolume = 0.0f;
+		}
+			
 		
 		if( SystemInfo.deviceModel.Contains("rockchip"))
 		{
@@ -649,7 +652,6 @@ public class MediaPlayerCtrl : MonoBehaviour {
 	
 	public void Play()
 	{
-        SetVolume(volume);
         if (m_bStop == true)
 		{
 			Call_Play(0);
