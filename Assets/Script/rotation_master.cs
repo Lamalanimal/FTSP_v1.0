@@ -26,11 +26,19 @@ public class rotation_master : MonoBehaviour {
         //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
         //----------------------------- B E L O W---------------------------------//
 
-        string fullPath = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
+
 
         //http://docs.unity3d.com/Manual/StreamingAssets.html
         //string fullPath = "jar:file://" + Application.dataPath + "!/assets/gyro_data.rot";
+        string fullPath = "";
 
+#if UNITY_ANDROID
+                fullPath = "/storage/emulated/0/Android/data/gyro_data.rot";
+
+#else
+                fullPath = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
+#endif
+        Handheld.PlayFullScreenMovie(fullPath);
         byte[] gyroTableau = File.ReadAllBytes(fullPath);
         int capture_size = ((3 * sizeof(float)) + sizeof(long));
         if (gyroTableau.Length % capture_size != 0)
