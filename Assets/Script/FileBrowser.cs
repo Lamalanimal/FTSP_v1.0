@@ -109,7 +109,7 @@ public class FileBrowser : MonoBehaviour
         //TODO give the different players the path for their media.
         leftVideoPlayer.Play();
         rightVideoPlayer.Play();
-        //rotationMaster.Play();
+        rotationMaster.initializeGyroData(file_path);
 
     }
 }
