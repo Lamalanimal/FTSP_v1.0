@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
 using System.IO;
 
+// States
+public enum state
+{
+	NOT_READY,
+	READY,
+	PLAYING,
+	DONE
+}
 
-public class rotation_master : MonoBehaviour {
-    //States:
-    public enum state
-    {
-        NOT_READY,
-        READY,
-        PLAYING,
-        DONE
-    }
+public class RotationMaster : MonoBehaviour {
+   
+	public state currentState; 
 
     // Cameras
     public Transform leftEye;
@@ -33,13 +35,12 @@ public class rotation_master : MonoBehaviour {
     private int t = 0;
 
 	// Delais
-	public float clap_GoPro; 	// Moment du clap dans les GoPros
-	public float clap_cell; 	// Moment du clap dans le video du cell
+	public float clapGoPro; 	// Moment du clap dans les GoPros
+	public float clapCell; 		// Moment du clap dans le video du cell
 	public float retard; 		// Avance du gyro_data sur les videos
 	private float delai;        // Delai combine
-    private float startTime;    //Temps ou on se met a jouer
 
-    public state currentState; 
+    
     // rotation_master lit les donnees de rotations enregistrees (gyro_data) et les applique aux eyeBoxes
     // En plus, rotation_master applique les rotations du cell et les applique aux cameras en utilisant le code de GvrHead
     // Il faut donc que trackPosition et trackRotation de GvrHead soit set a false.
@@ -52,13 +53,16 @@ public class rotation_master : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
+		// L'initialisation a reussie, on commence a faire jouer
         if (currentState == state.READY)
         {
             currentState = state.PLAYING;
-            startTime = Time.time;
+
+			// Ajustement du delai selon le temps qu'a dure l'initialisation
+			delai -= Time.time;
         }
             
-
+		// On applique les rotations des EyeBoxes si le video est en train de jouer
         if (currentState == state.PLAYING)
         {
             rotateEyeBox(); 
@@ -73,14 +77,16 @@ public class rotation_master : MonoBehaviour {
 
     }
 
+	// Rotation des EyeBoxes
     private void rotateEyeBox()
     {
-        // Updating the rotation
-        while (Time.time > gyroT[t] && t < gyroT.Length - 2)
+        // Mise a jour de la position du pointeur t
+        while (Time.time + delai > gyroT[t] && t < gyroT.Length - 2)
         {
             t++;
         }
 
+		// On applique la rotation des EyeBoxes
         if (t < gyroT.Length - 2)
         {
             float coeff = Time.deltaTime * 180f / Mathf.PI / (gyroT[t + 1] - gyroT[t]);
@@ -93,23 +99,21 @@ public class rotation_master : MonoBehaviour {
         }
         else
         {
-            //Debug.Log("Stop the rotation!");
+			// On arrete les rotations
+            // Debug.Log("Stop the rotation!");
             leftEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             rightEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             currentState = state.DONE;
         }
     }
 
+	// Preparation des donnees de rotation
     public void initializeGyroData(string path)
     {
-        if (currentState == state.DONE || currentState == state.NOT_READY)
+        if (currentState == state.NOT_READY)
         {
             // Initialisation des delais
-            // 0 pour l'instant
-            clap_GoPro = 0.0f;
-            clap_cell = 0.0f;
-            retard = 0.0f;
-            delai = 0.0f;
+			delai = retard + clapCell - clapGoPro;
 
             //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
             //----------------------------- B E L O W---------------------------------//

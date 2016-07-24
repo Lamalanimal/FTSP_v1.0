@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 
-public class Start_movie : MonoBehaviour {
+public class StartMovie : MonoBehaviour {
     // Use this for initialization
     void Start() {
         // Start the movie

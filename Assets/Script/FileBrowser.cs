@@ -15,13 +15,20 @@ public class FileBrowser : MonoBehaviour
     private Vector2 scrollMax;
     public MediaPlayerCtrl leftVideoPlayer;
     public MediaPlayerCtrl rightVideoPlayer;
-    public rotation_master rotationMaster;
+    public RotationMaster rotationMaster;
 
     // Use this for initialization
     void Start()
     {
+		// Choix du path pour le gyro data
         location = Application.dataPath;
-        location = "/storage/emulated/0/Android/";
+//		#if UNITY_EDITOR
+//			location = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
+//		#endif
+//
+//		#if UNITY_ANDROID && !UNITY_EDITOR
+//        	location = "/storage/emulated/0/Android/";
+//		#endif
         dI = new DirectoryInfo(location);
 
         scrollPosition = new Vector2();
@@ -29,19 +36,23 @@ public class FileBrowser : MonoBehaviour
     }
 
     void OnGUI()
-    {
-        if (path == "")
-        {
-            GUI.skin.label.fontSize = 50;
-            path = DirectoryPanel();
-        }
-        else
-        {
-            if (File.Exists(path))
-            {
-                activatePlayback(path);
-            }
-        }
+	{
+		if (rotationMaster.currentState == state.NOT_READY)
+		{
+			// Font size
+			GUI.skin.label.fontSize = 50;
+			#if UNITY_EDITOR
+			GUI.skin.label.fontSize = 18;
+			#endif
+			
+			if (path == "") { 
+				path = DirectoryPanel ();
+			} else {
+				if (File.Exists (path)) {
+					activatePlayback (path);
+				}
+			}
+		}
     }
 
 
@@ -60,7 +71,9 @@ public class FileBrowser : MonoBehaviour
     {
         GUIStyle customButtonStyle = new GUIStyle("button");
         customButtonStyle.fontSize = 50;
-
+		#if UNITY_EDITOR
+			customButtonStyle.fontSize = 18;
+		#endif
         //arriere plan. | background of the browser
         GUI.Box(new Rect(10, 20, Screen.width/2, Screen.height - 200), "Repertoire");
 
