@@ -21,11 +21,16 @@ public class rotation_master : MonoBehaviour {
     public Transform leftEyeBox;
     public Transform rightEyeBox;
 
+
+
+	// Test pour eviter le rebase sur git
+
+
     // Use this for initialization
     void Start () {
         //--------------- R E A D I N G   G Y R O   I N P U T---------------------//
         //----------------------------- B E L O W---------------------------------//
-
+	
 
 
         //http://docs.unity3d.com/Manual/StreamingAssets.html
