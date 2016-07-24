@@ -13,6 +13,9 @@ public class FileBrowser : MonoBehaviour
     public Shader shader = null;
     private Vector2 scrollPosition;
     private Vector2 scrollMax;
+    public MediaPlayerCtrl leftVideoPlayer;
+    public MediaPlayerCtrl rightVideoPlayer;
+    public rotation_master rotationMaster;
 
     // Use this for initialization
     void Start()
@@ -29,15 +32,14 @@ public class FileBrowser : MonoBehaviour
     {
         if (path == "")
         {
+            GUI.skin.label.fontSize = 50;
             path = DirectoryPanel();
         }
         else
         {
             if (File.Exists(path))
             {
-                //if (monObjet == null)
-                //    monObjet = new obj(path, shader);
-                ;
+                activatePlayback(path);
             }
         }
     }
@@ -56,23 +58,26 @@ public class FileBrowser : MonoBehaviour
 
     private string DirectoryPanel()
     {
+        GUIStyle customButtonStyle = new GUIStyle("button");
+        customButtonStyle.fontSize = 50;
+
         //arriere plan. | background of the browser
         GUI.Box(new Rect(10, 20, Screen.width/2, Screen.height - 200), "Repertoire");
 
         if (dI.FullName != "/"){
-            if (GUI.Button(new Rect(20, 40, Screen.width/2, Screen.height / 9), "Dossier parent"))
+            if (GUI.Button(new Rect(Screen.width / 4, 40, Screen.width/2, Screen.height / 9), "Dossier parent", customButtonStyle))
             {
                 dI = dI.Parent;
             }
         }
 
-        GUILayout.BeginArea(new Rect(30, 50 + Screen.height / 9, Screen.width / 2, Screen.height - (100 + Screen.height / 9)));
+        GUILayout.BeginArea(new Rect(Screen.width / 4, 50 + Screen.height / 9, Screen.width / 2, Screen.height - (100 + Screen.height / 9)));
         GUILayout.Label(dI.FullName + " :");
         scrollMax = GUILayout.BeginScrollView(scrollPosition);
         // Repertoire | Directory
         foreach (DirectoryInfo item in dI.GetDirectories())
         {
-            if (GUILayout.Button(new GUIContent(item.Name, (Texture2D)Resources.Load("folder-icon"))))
+            if (GUILayout.Button(new GUIContent(item.Name, (Texture2D)Resources.Load("folder-icon")), customButtonStyle))
             {
                 dI = item;
             }
@@ -80,19 +85,32 @@ public class FileBrowser : MonoBehaviour
         // Fichier | File
         foreach (FileInfo item in dI.GetFiles())
         {
-            if (GUILayout.Button(new GUIContent(item.Name)))
+            if (item.Extension == ".rot")
             {
-                if (item.Extension == ".rot")
+                if (GUILayout.Button(new GUIContent(item.Name), customButtonStyle))
                 {
-                    return item.FullName;
+                        return item.FullName;
                 }
             }
+
         }
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
         //si rien arrive. | if nothing happens
         return "";
+    }
+
+    //allow media control and rotation master to start their job, according to the chosen files.
+    //This could petentially be inside another class : MasterController.
+    //This file browser could then just be used to retreive the path and send it to MasterController.
+    private void activatePlayback(string file_path)
+    {
+        //TODO give the different players the path for their media.
+        leftVideoPlayer.Play();
+        rightVideoPlayer.Play();
+        //rotationMaster.Play();
+
     }
 }
 
