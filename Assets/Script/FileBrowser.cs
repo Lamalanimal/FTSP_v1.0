@@ -20,15 +20,15 @@ public class FileBrowser : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		// Choix du path pour le gyro data
-        location = Application.dataPath;
-//		#if UNITY_EDITOR
-//			location = Path.Combine(Path.Combine(".", "Assets"), Path.Combine("Movies", "gyro_data.rot"));
-//		#endif
-//
-//		#if UNITY_ANDROID && !UNITY_EDITOR
-//        	location = "/storage/emulated/0/Android/";
-//		#endif
+        // Choix du path pour le gyro data
+
+        #if UNITY_EDITOR
+        	location = Application.dataPath;
+        #endif
+        
+        #if UNITY_ANDROID && !UNITY_EDITOR
+            location = "/storage/emulated/0/Android/";
+        #endif
         dI = new DirectoryInfo(location);
 
         scrollPosition = new Vector2();
