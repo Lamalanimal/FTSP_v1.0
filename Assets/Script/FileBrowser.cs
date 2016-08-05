@@ -24,11 +24,12 @@ public class FileBrowser : MonoBehaviour
 
         #if UNITY_EDITOR
         	location = Application.dataPath;
-        #endif
-        
-        #if UNITY_ANDROID && !UNITY_EDITOR
+#endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
             location = "/storage/emulated/0/Android/";
-        #endif
+            //location = "jar:file://" + Application.dataPath + "!/assets/";
+#endif
         dI = new DirectoryInfo(location);
 
         scrollPosition = new Vector2();
@@ -123,7 +124,6 @@ public class FileBrowser : MonoBehaviour
         leftVideoPlayer.Play();
         rightVideoPlayer.Play();
         rotationMaster.initializeGyroData(file_path);
-
     }
 }
 
