@@ -62,12 +62,14 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
 
   void OnEnable() {
     GazeInputModule.gazePointer = this;
+        Debug.Log("1");
   }
 
   void OnDisable() {
     if (GazeInputModule.gazePointer == this) {
       GazeInputModule.gazePointer = null;
-    }
+            Debug.Log("2");
+        }
   }
 
   void Update() {
@@ -76,13 +78,14 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
 
   /// This is called when the 'BaseInputModule' system should be enabled.
   public void OnGazeEnabled() {
+        Debug.Log("3");
 
-  }
+    }
 
   /// This is called when the 'BaseInputModule' system should be disabled.
   public void OnGazeDisabled() {
-
-  }
+        Debug.Log("4");
+    }
 
   /// Called when the user is looking on a valid GameObject. This can be a 3D
   /// or UI element.
@@ -93,7 +96,8 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   public void OnGazeStart(Camera camera, GameObject targetObject, Vector3 intersectionPosition,
                           bool isInteractive) {
     SetGazeTarget(intersectionPosition, isInteractive);
-  }
+        Debug.Log("5");
+    }
 
   /// Called every frame the user is still looking at a valid GameObject. This
   /// can be a 3D or UI element.
@@ -104,7 +108,8 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   public void OnGazeStay(Camera camera, GameObject targetObject, Vector3 intersectionPosition,
                          bool isInteractive) {
     SetGazeTarget(intersectionPosition, isInteractive);
-  }
+        Debug.Log("6");
+    }
 
   /// Called when the user's look no longer intersects an object previously
   /// intersected with a ray projected from the camera.
@@ -117,19 +122,22 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
     reticleDistanceInMeters = kReticleDistanceMax;
     reticleInnerAngle = kReticleMinInnerAngle;
     reticleOuterAngle = kReticleMinOuterAngle;
-  }
+        Debug.Log("7");
+    }
 
   /// Called when a trigger event is initiated. This is practically when
   /// the user begins pressing the trigger.
   public void OnGazeTriggerStart(Camera camera) {
-    // Put your reticle trigger start logic here :)
-  }
+        // Put your reticle trigger start logic here :)
+        Debug.Log("8");
+    }
 
   /// Called when a trigger event is finished. This is practically when
   /// the user releases the trigger.
   public void OnGazeTriggerEnd(Camera camera) {
-    // Put your reticle trigger end logic here :)
-  }
+        // Put your reticle trigger end logic here :)
+        Debug.Log("9");
+    }
 
   public void GetPointerRadius(out float innerRadius, out float outerRadius) {
     float min_inner_angle_radians = Mathf.Deg2Rad * kReticleMinInnerAngle;
@@ -220,7 +228,8 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   }
 
   private void SetGazeTarget(Vector3 target, bool interactive) {
-    Vector3 targetLocalPosition = transform.InverseTransformPoint(target);
+        Debug.Log("11");
+        Vector3 targetLocalPosition = transform.InverseTransformPoint(target);
 
     reticleDistanceInMeters =
         Mathf.Clamp(targetLocalPosition.z, kReticleDistanceMin, kReticleDistanceMax);
