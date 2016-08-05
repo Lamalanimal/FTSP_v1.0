@@ -25,7 +25,6 @@ public class MouseCamera : MonoBehaviour {
 
         rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
 
-        Debug.Log(rotX);
         Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
         transform.rotation = localRotation;
     }
