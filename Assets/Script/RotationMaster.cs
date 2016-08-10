@@ -12,15 +12,20 @@ public enum state
 
 public class RotationMaster : MonoBehaviour {
    
-	public state currentState; 
+	// Etats
+	public state currentState;
 
-    // Cameras
+	// Si on veut looper
+	private bool loop;
+
+	// Cameras (Dreamer)
     public Transform leftEye;
 	public Transform rightEye;
 
-	// EyeBoxes
+	// EyeBoxes (Cameraman)
 	public Transform leftEyeBox;
 	public Transform rightEyeBox;
+	public float sensitivity = 1.0f;
 
 	// Si on veut faire motifier les rotations dans Update() plutot que LateUpdate()
 	// Potentiellement a utiliser avec un ray cast
@@ -42,6 +47,7 @@ public class RotationMaster : MonoBehaviour {
 
 	// Temps du movie
 	private float timeMovie;
+	private float startTimeMovie;
 
 
     
@@ -55,25 +61,30 @@ public class RotationMaster : MonoBehaviour {
 
 		// Initialisation des delais
 		delai = retard + clapCell - clapGoPro;
+
+		// Ov va chercher la valeur de loop de MovieMaster
+		MovieMaster movieMaster = (GameObject.Find("MovieMaster")).GetComponent<MovieMaster>();
+		loop = movieMaster.loop;
+	
     }
 
     // Update is called once per frame
     void Update () {
 
 		// L'initialisation a reussie, on commence a faire jouer
-        if (currentState == state.READY)
-        {
-            currentState = state.PLAYING;
+		if ( currentState == state.READY || (loop && currentState == state.DONE ) ) {
+			currentState = state.PLAYING;
 
 			// Ajustement du delai selon le temps qu'a dure l'initialisation
-			delai -= Time.time;
-        }
+			startTimeMovie = Time.time;
+		}
+
             
 		// On applique les rotations des EyeBoxes si le video est en train de jouer
         if (currentState == state.PLAYING)
         {
 			// Mise a jour du temps reference au film
-			timeMovie = Time.time + delai;
+			timeMovie = Time.time + delai - startTimeMovie;
 
 			// Rotation des EyeBoxes
             rotateEyeBox(); 
@@ -88,6 +99,16 @@ public class RotationMaster : MonoBehaviour {
 
     }
 
+	// Normally, update head pose now.
+	void LateUpdate()
+	{
+
+		UpdateEyes();
+
+	}
+
+
+
 	// Rotation des EyeBoxes
     private void rotateEyeBox()
     {
@@ -100,7 +121,7 @@ public class RotationMaster : MonoBehaviour {
 		// On applique la rotation des EyeBoxes
         if (t < gyroT.Length - 2)
         {
-            float coeff = Time.deltaTime * 180f / Mathf.PI / (gyroT[t + 1] - gyroT[t]);
+            float coeff = sensitivity * Time.deltaTime * 180f / Mathf.PI / (gyroT[t + 1] - gyroT[t]);
             float rotX = coeff * ((gyroT[t + 1] - timeMovie) * gyroY[t] + (timeMovie - gyroT[t]) * gyroY[t + 1]);
             float rotY = coeff * ((gyroT[t + 1] - timeMovie) * gyroX[t] + (timeMovie - gyroT[t]) * gyroX[t + 1]);
             float rotZ = coeff * ((gyroT[t + 1] - timeMovie) * gyroZ[t] + (timeMovie - gyroT[t]) * gyroZ[t + 1]);
@@ -111,13 +132,38 @@ public class RotationMaster : MonoBehaviour {
         }
         else
         {
-			// On arrete les rotations
-            // Debug.Log("Stop the rotation!");
+			// On arrete les rotations !
+			currentState = state.DONE;
+
+			// Reset
+			t = 0;
             leftEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             rightEyeBox.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            currentState = state.DONE;
+           
         }
     }
+
+	// Compute new head pose.
+	private void UpdateEyes()
+	{
+		if (updated) {  // Only one update per frame, please.
+			return;
+		}
+		updated = true;
+
+		GvrViewer.Instance.UpdateState();
+
+		var rot = GvrViewer.Instance.HeadPose.Orientation;
+
+		if (leftEye != null || rightEye!=null)
+		{
+			leftEye.rotation = rot;
+			rightEye.rotation = rot;
+		}
+
+	}
+
+
 
 	// Preparation des donnees de rotation
     public void initializeGyroData(string path)
@@ -184,31 +230,6 @@ public class RotationMaster : MonoBehaviour {
         }     
     }
 
-    // Normally, update head pose now.
-    void LateUpdate()
-    {
 
-        UpdateEyes();
-        
-    }
 
-    // Compute new head pose.
-    private void UpdateEyes()
-    {
-		if (updated) {  // Only one update per frame, please.
-			return;
-		}
-		updated = true;
-
-        GvrViewer.Instance.UpdateState();
-
-        var rot = GvrViewer.Instance.HeadPose.Orientation;
-
-        if (leftEye != null || rightEye!=null)
-        {
-            leftEye.rotation = rot;
-            rightEye.rotation = rot;
-        }
-
-    }
 }

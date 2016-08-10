@@ -13,9 +13,10 @@ public class FileBrowser : MonoBehaviour
     public Shader shader = null;
     private Vector2 scrollPosition;
     private Vector2 scrollMax;
-    public MediaPlayerCtrl leftVideoPlayer;
-    public MediaPlayerCtrl rightVideoPlayer;
+//    public MediaPlayerCtrl leftVideoPlayer;
+//    public MediaPlayerCtrl rightVideoPlayer;
     public RotationMaster rotationMaster;
+	public MovieMaster movieMaster;
 
     // Use this for initialization
     void Start()
@@ -24,12 +25,10 @@ public class FileBrowser : MonoBehaviour
 
         #if UNITY_EDITOR
         	location = Application.dataPath;
-#endif
-
-#if UNITY_ANDROID && !UNITY_EDITOR
+		#elif UNITY_ANDROID
             location = "/storage/emulated/0/Android/";
             //location = "jar:file://" + Application.dataPath + "!/assets/";
-#endif
+		#endif
         dI = new DirectoryInfo(location);
 
         scrollPosition = new Vector2();
@@ -41,9 +40,11 @@ public class FileBrowser : MonoBehaviour
 		if (rotationMaster.currentState == state.NOT_READY)
 		{
 			// Font size
-			GUI.skin.label.fontSize = 50;
+
 			#if UNITY_EDITOR
-			GUI.skin.label.fontSize = 18;
+				GUI.skin.label.fontSize = 18;
+			#elif UNITY_ANDROID
+				GUI.skin.label.fontSize = 72;
 			#endif
 			
 			if (path == "") { 
@@ -71,10 +72,14 @@ public class FileBrowser : MonoBehaviour
     private string DirectoryPanel()
     {
         GUIStyle customButtonStyle = new GUIStyle("button");
-        customButtonStyle.fontSize = 50;
+
+		// FOntSize
 		#if UNITY_EDITOR
 			customButtonStyle.fontSize = 18;
+		#elif UNITY_ANDROID
+			GUI.skin.label.fontSize = 72;
 		#endif
+
         //arriere plan. | background of the browser
         GUI.Box(new Rect(10, 20, Screen.width/2, Screen.height - 200), "Repertoire");
 
@@ -121,9 +126,11 @@ public class FileBrowser : MonoBehaviour
     private void activatePlayback(string file_path)
     {
         //TODO give the different players the path for their media.
-        leftVideoPlayer.Play();
-        rightVideoPlayer.Play();
+        
         rotationMaster.initializeGyroData(file_path);
+		movieMaster.Play ();
+//		leftVideoPlayer.Play();
+//		rightVideoPlayer.Play();
     }
 }
 
