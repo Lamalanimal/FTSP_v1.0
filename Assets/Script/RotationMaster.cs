@@ -127,7 +127,7 @@ public class RotationMaster : MonoBehaviour {
             float rotZ = coeff * ((gyroT[t + 1] - timeMovie) * gyroZ[t] + (timeMovie - gyroT[t]) * gyroZ[t + 1]);
 
             leftEyeBox.rotation = leftEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
-            rightEyeBox.rotation = rightEyeBox.rotation * Quaternion.Euler(new Vector3(rotX, -rotY, rotZ));
+			rightEyeBox.rotation = leftEyeBox.rotation;
 
         }
         else
